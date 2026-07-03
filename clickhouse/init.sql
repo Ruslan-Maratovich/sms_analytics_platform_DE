@@ -1,10 +1,8 @@
 CREATE DATABASE IF NOT EXISTS sms;
 
-CREATE USER IF NOT EXISTS superset
-IDENTIFIED WITH plaintext_password
-BY 'superset';
-
-GRANT ALL ON sms.* TO superset;
+--CREATE USER IF NOT EXISTS superset_http
+--IDENTIFIED WITH plaintext_password BY 'superset';
+--GRANT ALL ON sms.* TO superset_http;
 
 -- Основная витрина
 
@@ -55,8 +53,8 @@ ORDER BY
 (
     customer_id,
     sent_date,
-    country,
-    receiver_operator,
+    ifNull(country, ''),
+    ifNull(receiver_operator, ''),
     message_id
 );
 

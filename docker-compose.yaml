@@ -1,0 +1,42 @@
+services:
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.3
+    container_name: clickhouse
+
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+
+    environment:
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: default123
+
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - ./clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./clickhouse/ddl:/ddl
+
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "localhost:8123/ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  generator:
+    build:
+      context: ./generator
+
+    container_name: sms_generator
+
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
+    command:
+      ["python", "generate.py", "--rows", "1000000"]
+
+
+volumes:
+  clickhouse_data:
+  postgres_data:
