@@ -1,11 +1,5 @@
 CREATE DATABASE IF NOT EXISTS sms;
 
---CREATE USER IF NOT EXISTS superset_http
---IDENTIFIED WITH plaintext_password BY 'superset';
---GRANT ALL ON sms.* TO superset_http;
-
--- Основная витрина
-
 CREATE TABLE IF NOT EXISTS sms.messages_mart
 (
     customer_id UInt32,

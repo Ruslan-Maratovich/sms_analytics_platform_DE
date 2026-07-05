@@ -11,10 +11,11 @@ services:
     environment:
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: default123
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
 
     volumes:
       - clickhouse_data:/var/lib/clickhouse
-      - ./clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./clickhouse/ddl/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./clickhouse/ddl:/ddl
 
     healthcheck:
@@ -36,7 +37,31 @@ services:
     command:
       ["python", "generate.py", "--rows", "1000000"]
 
+  superset:
+    build:
+      context: ./superset
+      dockerfile: Dockerfile
+
+    container_name: superset
+
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
+    ports:
+      - "8088:8088"
+
+    environment:
+      SUPERSET_SECRET_KEY: super-secret-key
+      PYTHONPATH: /app/pythonpath
+
+    volumes:
+      - superset_home:/app/superset_home
+
+    restart: unless-stopped
+
 
 volumes:
   clickhouse_data:
-  postgres_data:
+  superset_home:
+
