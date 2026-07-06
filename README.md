@@ -40,11 +40,14 @@
 3. Необходимо ввести логин и пароль
 ![SMS Dashboard](others/sign_in.jpg)
 4. Далее создаем новое подключение к базе данных, где в сплывающем окне выбираем ClikcHouse Connect (Superset)
+   
 ![SMS Dashboard](others/new_db_connection.jpg)
 
-5. Вводим необходиbst реквизиты для подключения: host, port, user, password, database name
+6. Вводим необходимые реквизиты для подключения: host, port, user, password, database name
+   
 ![SMS Dashboard](others/credentials_db.jpg)
-6. Переходим во кладку Dashboards и видим автоматически созданные дашборды
+
+8. Переходим во кладку Dashboards и видим автоматически созданные дашборды
 
 
 
