@@ -40,16 +40,13 @@
     1.1 В командной строке введите docker logs -f sms_generator для вывода логов загруги данных в clickhouse
 2. После того, как сервесы поднимутся и генерируемые данные прогрузятся , перейдите по локльной ссылке http://localhost:8088/login/ к UI Superset
 3. Необходимо ввести логин и пароль
-
 ![SMS Dashboard](others/sign_in.jpg)
 
 4. Далее создаем новое подключение к базе данных, где в сплывающем окне выбираем Other
-   
 ![SMS Dashboard](others/other_db.jpg)
 
 6. Вставляем необходимый URI в поле SQLALCHEMY URI: 
     clickhousedb+connect://default:default123@clickhouse01:8123/sms
-   
 ![SMS Dashboard](others/other_connection_db.jpg)
 
 8. Переходим во кладку Dashboards и видим автоматически созданные дашборды
