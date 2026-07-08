@@ -1,0 +1,20 @@
+2026.07.07 16:20:55.571453 [ 1 ] {} <Error> Application: Poco::Exception. Code: 1000, e.code() = 0, Syntax error: Not a valid integer: '
+
+            1
+
+        ', Stack trace (when copying this message, always include the lines below):
+
+0. Poco::NumberParser::parse(String const&, char) @ 0x00000000118cdcef
+1. Poco::Util::AbstractConfiguration::getInt(String const&) const @ 0x0000000011932a64
+2. DB::KeeperConfigurationAndSettings::loadFromConfig(Poco::Util::AbstractConfiguration const&, bool) @ 0x000000000dba3a81
+3. DB::KeeperDispatcher::initialize(Poco::Util::AbstractConfiguration const&, bool, bool, std::shared_ptr<DB::Macros const> const&) @ 0x000000000dbce411
+4. DB::Context::initializeKeeperDispatcher(bool) const @ 0x000000000c48ce52
+5. DB::Keeper::main(std::vector<String, std::allocator<String>> const&) @ 0x0000000005fd5d7a
+6. Poco::Util::Application::run() @ 0x000000001193afe6
+7. DB::Keeper::run() @ 0x0000000005fd2b50
+8. mainEntryClickHouseKeeper(int, char**) @ 0x0000000005fd1722
+9. main @ 0x0000000005fd0333
+10. ? @ 0x0000706b96196d90
+11. ? @ 0x0000706b96196e40
+12. _start @ 0x000000000504302e
+ (version 25.3.14.14 (official build))

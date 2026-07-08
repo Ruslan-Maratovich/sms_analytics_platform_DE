@@ -16,6 +16,7 @@
 - Обоснование выбора движка, партиционирования и ключа сортировки. (./clickouse/ddl/init.sql)
 - Кастомизировае Superset через Feature flags
 - Построение DQ дашборд для владельца данных
+- Развертываение ClickHouse+CH keeper 3 nodes в кластерном режиме и правка DDL.
 
 ## 📊 SMS Operations Дашборд
 
@@ -35,17 +36,18 @@
 
 ## ▶️ Запуск
 
-1. Запускаем команду docker compose up -d
-2. После того, как сервесы поднимутся, перейдите по локльной ссылке http://localhost:8088/login/ к UI Superset
+1. Запускаем команду docker compose up -d (Необходимо подождать до 3 минут, так данные будут загружать в кластерный clickhouse)
+    1.1 В командной строке введите docker logs -f sms_generator для вывода логов загруги данных в clickhouse
+2. После того, как сервесы поднимутся и генерируемые данные прогрузятся , перейдите по локльной ссылке http://localhost:8088/login/ к UI Superset
 3. Необходимо ввести логин и пароль
 ![SMS Dashboard](others/sign_in.jpg)
-4. Далее создаем новое подключение к базе данных, где в сплывающем окне выбираем ClikcHouse Connect (Superset)
-   
-![SMS Dashboard](others/new_db_connection.jpg)
 
-6. Вводим необходимые реквизиты для подключения: host, port, user, password, database name
-   
-![SMS Dashboard](others/credentials_db.jpg)
+4. Далее создаем новое подключение к базе данных, где в сплывающем окне выбираем Other
+![SMS Dashboard](others/other_db.jpg)
+
+6. Вставляем необходимый URI в поле SQLALCHEMY URI: 
+    clickhousedb+connect://default:default123@clickhouse01:8123/sms
+![SMS Dashboard](others/other_connection_db.jpg)
 
 8. Переходим во кладку Dashboards и видим автоматически созданные дашборды
 

@@ -1,0 +1,22 @@
+<clickhouse>
+    <listen_host>0.0.0.0</listen_host>
+    <listen_try>true</listen_try>
+    <zookeeper>
+        <node>
+            <host>keeper01</host>
+            <port>9181</port>
+        </node>
+        <node>
+            <host>keeper02</host>
+            <port>9181</port>
+        </node>
+        <node>
+            <host>keeper03</host>
+            <port>9181</port>
+        </node>
+    </zookeeper>
+    <macros>
+        <shard>01</shard>
+        <replica>clickhouse02</replica>
+    </macros>
+</clickhouse>
