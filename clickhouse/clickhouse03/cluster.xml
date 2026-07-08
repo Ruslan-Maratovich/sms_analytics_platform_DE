@@ -1,0 +1,26 @@
+<clickhouse>
+    <remote_servers>
+        <sms_cluster>
+            <shard>
+                <replica>
+                    <host>clickhouse01</host>
+                    <port>9000</port>
+                    <user>default</user>
+                    <password>default123</password>
+                </replica>
+                <replica>
+                    <host>clickhouse02</host>
+                    <port>9000</port>
+                    <user>default</user>
+                    <password>default123</password>
+                </replica>
+                <replica>
+                    <host>clickhouse03</host>
+                    <port>9000</port>
+                    <user>default</user>
+                    <password>default123</password>
+                </replica>
+            </shard>
+        </sms_cluster>
+    </remote_servers>
+</clickhouse>

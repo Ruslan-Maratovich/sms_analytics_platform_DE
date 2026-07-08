@@ -1,16 +1,13 @@
-
--- ReplacingMergeTree(updated_at) - позволяет хранить несколько версий сообщений и автоматически оставлять актуальную запись.
--- PARTITION BY toYYYYMM(sent_date) - обеспечивает эффективное чтение по временным диапазонам и не создает чрезмерное количество партиций.
--- ORDER BY (customer_id, sent_date, country, receiver_operator, message_id) оптимизирован под наиболее частые запросы:
-    -- сначала фильтрация по клиенту;
-    -- затем по периоду;
-    -- далее аналитические разрезы по стране и оператору;
-    -- message_id завершает ключ, обеспечивая уникальность строк и корректную работу механизма замены версий.
+CREATE DATABASE IF NOT EXISTS sms
+ON CLUSTER sms_cluster;
 
 
-CREATE DATABASE IF NOT EXISTS sms;
+-------------------------------------------------------
+-- Основная таблица локальная
+-------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS sms.messages_mart
+CREATE TABLE IF NOT EXISTS sms.messages_mart_local
+ON CLUSTER sms_cluster
 (
     customer_id UInt32,
 
@@ -49,7 +46,12 @@ CREATE TABLE IF NOT EXISTS sms.messages_mart
     deleted_at Nullable(DateTime64(6))
 )
 
-ENGINE = ReplacingMergeTree(updated_at)
+ENGINE = ReplicatedReplacingMergeTree
+(
+    '/clickhouse/tables/{shard}/messages_mart_local',
+    '{replica}',
+    updated_at
+)
 
 PARTITION BY toYYYYMM(sent_date)
 
@@ -57,14 +59,37 @@ ORDER BY
 (
     customer_id,
     sent_date,
-    ifNull(country, ''),
-    ifNull(receiver_operator, ''),
+    ifNull(country,''),
+    ifNull(receiver_operator,''),
     message_id
 );
 
--- Агрегаты
 
-CREATE TABLE IF NOT EXISTS sms.sms_daily_stats
+
+-------------------------------------------------------
+-- Distributed таблица
+-------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS sms.messages_mart
+ON CLUSTER sms_cluster
+AS sms.messages_mart_local
+
+ENGINE = Distributed
+(
+    sms_cluster,
+    sms,
+    messages_mart_local,
+    rand()
+);
+
+
+
+-------------------------------------------------------
+-- Агрегаты локальная таблица
+-------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS sms.sms_daily_stats_local
+ON CLUSTER sms_cluster
 (
     event_date Date,
 
@@ -87,13 +112,39 @@ ORDER BY
     event_date
 );
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS sms.mv_sms_daily_stats
 
-TO sms.sms_daily_stats
+
+-------------------------------------------------------
+-- Distributed агрегаты
+-------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS sms.sms_daily_stats
+ON CLUSTER sms_cluster
+AS sms.sms_daily_stats_local
+
+ENGINE = Distributed
+(
+    sms_cluster,
+    sms,
+    sms_daily_stats_local,
+    rand()
+);
+
+
+
+-------------------------------------------------------
+-- Materialized View
+-------------------------------------------------------
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS sms.mv_sms_daily_stats
+ON CLUSTER sms_cluster
+
+TO sms.sms_daily_stats_local
 
 AS
 
 SELECT
+
     toDate(sent_date) AS event_date,
 
     customer_id,
@@ -104,10 +155,12 @@ SELECT
 
     sum(price) AS revenue
 
-FROM sms.messages_mart
+FROM sms.messages_mart_local
 
 WHERE deleted_at IS NULL
 
 GROUP BY
+
     event_date,
+
     customer_id;

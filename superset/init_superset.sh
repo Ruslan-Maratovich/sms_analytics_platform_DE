@@ -112,7 +112,7 @@ for zip_path in glob.glob("/app/superset/dashboards/*.zip"):
             files={"formData": ( os.path.basename(zip_path),f,"application/zip",)},
             data={
                 "overwrite": "true",
-                "passwords": "{\"databases/ClickHouse_Connect_Superset.yaml\": \"default123\"}"
+                "passwords": "{\"databases/Other.yaml\": \"default123\"}"
             }
         )
     print(f"Status: {resp.status_code}")

@@ -1,38 +1,191 @@
 services:
 
-  clickhouse:
+  keeper01:
+    image: clickhouse/clickhouse-keeper:25.3
+    networks:
+      - sms_network
+    container_name: keeper01
+
+    hostname: keeper01
+
+    volumes:
+      - keeper01_data:/var/lib/clickhouse-keeper
+      - ./keeper/keeper01/keeper_config.xml:/etc/clickhouse-keeper/keeper_config.xml
+
+    ports:
+      - "9181:9181"
+
+    command:
+      [
+        "clickhouse-keeper",
+        "--config-file=/etc/clickhouse-keeper/keeper_config.xml"
+      ]
+  
+
+  keeper02:
+    image: clickhouse/clickhouse-keeper:25.3
+    networks:
+      - sms_network
+    container_name: keeper02
+
+    hostname: keeper02
+
+    volumes:
+      - keeper02_data:/var/lib/clickhouse-keeper
+      - ./keeper/keeper02/keeper_config.xml:/etc/clickhouse-keeper/keeper_config.xml
+
+    ports:
+      - "9182:9181"
+
+    command:
+      [
+        "clickhouse-keeper",
+        "--config-file=/etc/clickhouse-keeper/keeper_config.xml"
+      ]
+
+  keeper03:
+
+    image: clickhouse/clickhouse-keeper:25.3
+    networks:
+      - sms_network
+    container_name: keeper03
+
+    hostname: keeper03
+
+    volumes:
+      - keeper03_data:/var/lib/clickhouse-keeper
+      - ./keeper/keeper03/keeper_config.xml:/etc/clickhouse-keeper/keeper_config.xml
+
+
+    ports:
+      - "9183:9181"
+
+
+    command:
+      [
+        "clickhouse-keeper",
+        "--config-file=/etc/clickhouse-keeper/keeper_config.xml"
+      ]
+
+
+  clickhouse01:
     image: clickhouse/clickhouse-server:25.3
-    container_name: clickhouse
+    container_name: clickhouse01
+    hostname: clickhouse01
+
+    depends_on:
+      - keeper01
+      - keeper02
+      - keeper03
 
     ports:
       - "8123:8123"
       - "9000:9000"
 
-    environment:
-      CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: default123
-      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
-
+    networks:
+        - sms_network
+    
     volumes:
-      - clickhouse_data:/var/lib/clickhouse
-      - ./clickhouse/ddl/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./clickhouse/ddl:/ddl
+      - clickhouse01_data:/var/lib/clickhouse
+      - ./clickhouse/clickhouse01/config.xml:/etc/clickhouse-server/config.d/config.xml
+      - ./clickhouse/clickhouse01/cluster.xml:/etc/clickhouse-server/config.d/cluster.xml
+      - ./clickhouse/clickhouse01/users.xml:/etc/clickhouse-server/users.d/users.xml
+      - ./clickhouse/clickhouse01/users.d:/etc/clickhouse-server/users.d
 
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "localhost:8123/ping"]
+      test:
+        [
+          "CMD",
+          "clickhouse-client",
+          "--user",
+          "default",
+          "--password",
+          "default123",
+          "--query",
+          "SELECT 1"
+        ]
       interval: 5s
       timeout: 5s
       retries: 20
 
+  clickhouse02:
+    image: clickhouse/clickhouse-server:25.3
+    container_name: clickhouse02
+    networks:
+      - sms_network
+    hostname: clickhouse02
+
+    depends_on:
+      - keeper01
+      - keeper02
+      - keeper03
+
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+
+    volumes:
+      - clickhouse02_data:/var/lib/clickhouse
+      - ./clickhouse/clickhouse02/config.xml:/etc/clickhouse-server/config.d/config.xml
+      - ./clickhouse/clickhouse02/cluster.xml:/etc/clickhouse-server/config.d/cluster.xml
+      - ./clickhouse/clickhouse02/users.xml:/etc/clickhouse-server/users.d/users.xml
+
+  clickhouse03:
+    image: clickhouse/clickhouse-server:25.3
+    networks:
+      - sms_network
+    container_name: clickhouse03
+    hostname: clickhouse03
+
+    depends_on:
+      - keeper01
+      - keeper02
+      - keeper03
+
+    ports:
+      - "8125:8123"
+      - "9002:9000"
+
+    volumes:
+      - clickhouse03_data:/var/lib/clickhouse
+      - ./clickhouse/clickhouse03/config.xml:/etc/clickhouse-server/config.d/config.xml
+      - ./clickhouse/clickhouse03/cluster.xml:/etc/clickhouse-server/config.d/cluster.xml
+      - ./clickhouse/clickhouse03/users.xml:/etc/clickhouse-server/users.d/users.xml
+
+  clickhouse-init:
+    image: clickhouse/clickhouse-server:25.3
+
+    networks:
+      - sms_network
+
+    container_name: clickhouse-init
+
+    depends_on:
+      clickhouse01:
+        condition: service_healthy
+
+    volumes:
+      - ./clickhouse/ddl/init.sql:/init.sql
+
+    entrypoint:
+      [
+        "bash",
+        "-c",
+        "clickhouse-client --host clickhouse01 --user default --password default123 --multiquery < /init.sql"
+      ]
+
   generator:
     build:
       context: ./generator
+    
+    networks:
+      - sms_network
 
     container_name: sms_generator
 
     depends_on:
-      clickhouse:
-        condition: service_healthy
+      clickhouse-init:
+        condition: service_completed_successfully
 
     command:
       ["python", "generate.py", "--rows", "1000000"]
@@ -44,10 +197,13 @@ services:
 
     container_name: superset
 
-    depends_on:
-      clickhouse:
-        condition: service_healthy
+    networks:
+        - sms_network
 
+    depends_on:
+      clickhouse-init:
+        condition: service_completed_successfully
+        
     ports:
       - "8088:8088"
 
@@ -60,8 +216,19 @@ services:
 
     restart: unless-stopped
 
+networks:
+  sms_network:
+    driver: bridge
 
-volumes:
-  clickhouse_data:
+
+volumes:  
+  keeper01_data:
+  keeper02_data:
+  keeper03_data:
+
+  clickhouse01_data:
+  clickhouse02_data:
+  clickhouse03_data:
+  
   superset_home:
 
