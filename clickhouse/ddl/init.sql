@@ -164,3 +164,95 @@ GROUP BY
     event_date,
 
     customer_id;
+
+-------------------------------------------------------
+-- Создаем таблицу соответствия стран(dictionary-справочник)
+-------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS sms.country_dictionary_local
+ON CLUSTER sms_cluster
+(
+    country_name LowCardinality(String),
+    country_code FixedString(2)
+)
+ENGINE = ReplicatedMergeTree(
+    '/clickhouse/tables/{shard}/country_dictionary_local',
+    '{replica}'
+)
+ORDER BY country_code;
+
+CREATE TABLE IF NOT EXISTS sms.country_dictionary
+ON CLUSTER sms_cluster
+AS sms.country_dictionary_local
+
+ENGINE = Distributed
+(
+    sms_cluster,
+    sms,
+    country_dictionary_local,
+    rand()
+);
+
+INSERT INTO sms.country_dictionary VALUES
+('Russian Federation','RU'),
+('Kazakhstan','KZ'),
+('Azerbaijan','AZ'),
+('Kyrgyzstan','KG'),
+('Tajikistan','TJ'),
+('Belarus','BY'),
+('Uzbekistan','UZ'),
+('Armenia','AM'),
+('Georgia','GE'),
+('Israel','IL'),
+('Moldova','MD');
+
+-------------------------------------------------------
+-- Таблица праздников)
+-------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS sms.public_holidays_local
+ON CLUSTER sms_cluster
+(
+    country_code FixedString(2),
+
+    holiday_date Date,
+
+    holiday_name LowCardinality(String),
+
+    local_name String,
+
+    holiday_type Array(String),
+
+    created_at DateTime DEFAULT now(),
+
+    updated_at DateTime DEFAULT now()
+)
+
+ENGINE = ReplicatedReplacingMergeTree
+(
+ '/clickhouse/tables/{shard}/public_holidays_local',
+ '{replica}',
+ updated_at
+)
+
+PARTITION BY toYYYYMM(holiday_date)
+
+ORDER BY
+(
+ country_code,
+ holiday_date,
+ holiday_name
+);
+
+
+CREATE TABLE IF NOT EXISTS sms.public_holidays
+ON CLUSTER sms_cluster
+AS sms.public_holidays_local
+
+ENGINE = Distributed
+(
+ sms_cluster,
+ sms,
+ public_holidays_local,
+ rand()
+);

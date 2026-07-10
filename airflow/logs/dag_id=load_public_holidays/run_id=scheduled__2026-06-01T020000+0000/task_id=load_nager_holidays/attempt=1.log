@@ -1,0 +1,60 @@
+[2026-07-09T18:01:26.688+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2026-07-09T18:01:26.731+0000] {taskinstance.py:2614} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: load_public_holidays.load_nager_holidays scheduled__2026-06-01T02:00:00+00:00 [queued]>
+[2026-07-09T18:01:26.751+0000] {taskinstance.py:2614} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: load_public_holidays.load_nager_holidays scheduled__2026-06-01T02:00:00+00:00 [queued]>
+[2026-07-09T18:01:26.754+0000] {taskinstance.py:2867} INFO - Starting attempt 1 of 1
+[2026-07-09T18:01:26.789+0000] {taskinstance.py:2890} INFO - Executing <Task(BashOperator): load_nager_holidays> on 2026-06-01 02:00:00+00:00
+[2026-07-09T18:01:26.802+0000] {standard_task_runner.py:72} INFO - Started process 65 to run task
+[2026-07-09T18:01:26.813+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'load_public_holidays', 'load_nager_holidays', 'scheduled__2026-06-01T02:00:00+00:00', '--job-id', '2', '--raw', '--subdir', 'DAGS_FOLDER/load_public_holidays_dag.py', '--cfg-path', '/tmp/tmp5_2nmnzu']
+[2026-07-09T18:01:26.817+0000] {standard_task_runner.py:105} INFO - Job 2: Subtask load_nager_holidays
+[2026-07-09T18:01:26.982+0000] {task_command.py:467} INFO - Running <TaskInstance: load_public_holidays.load_nager_holidays scheduled__2026-06-01T02:00:00+00:00 [running]> on host c895995da5cf
+[2026-07-09T18:01:27.161+0000] {taskinstance.py:3134} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='load_public_holidays' AIRFLOW_CTX_TASK_ID='load_nager_holidays' AIRFLOW_CTX_EXECUTION_DATE='2026-06-01T02:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2026-06-01T02:00:00+00:00'
+[2026-07-09T18:01:27.167+0000] {taskinstance.py:732} INFO - ::endgroup::
+[2026-07-09T18:01:27.254+0000] {subprocess.py:78} INFO - Tmp dir root location: /tmp
+[2026-07-09T18:01:27.258+0000] {subprocess.py:88} INFO - Running command: ['/usr/bin/bash', '-c', '\n        python /opt/***/scripts/load_public_holidays.py\n        ']
+[2026-07-09T18:01:27.278+0000] {subprocess.py:99} INFO - Output:
+[2026-07-09T18:01:48.279+0000] {subprocess.py:106} INFO - ['AM', 'AZ', 'BY', 'GE', 'IL', 'KG', 'KZ', 'MD', 'RU', 'TJ', 'UZ']
+[2026-07-09T18:01:48.283+0000] {subprocess.py:106} INFO - https://date.nager.at/api/v4/Holidays/AM/2026
+[2026-07-09T18:01:48.287+0000] {subprocess.py:106} INFO - AM 200 application/json; charset=utf-8
+[2026-07-09T18:01:48.290+0000] {subprocess.py:106} INFO - AM: 14
+[2026-07-09T18:01:48.293+0000] {subprocess.py:106} INFO - https://date.nager.at/api/v4/Holidays/AZ/2026
+[2026-07-09T18:01:48.297+0000] {subprocess.py:106} INFO - AZ 204 None
+[2026-07-09T18:01:48.299+0000] {subprocess.py:106} INFO - 
+[2026-07-09T18:01:48.302+0000] {subprocess.py:106} INFO - AZ: 0
+[2026-07-09T18:01:48.305+0000] {subprocess.py:106} INFO - https://date.nager.at/api/v4/Holidays/BY/2026
+[2026-07-09T18:01:48.308+0000] {subprocess.py:106} INFO - BY 200 application/json; charset=utf-8
+[2026-07-09T18:01:48.311+0000] {subprocess.py:106} INFO - BY: 10
+[2026-07-09T18:01:48.313+0000] {subprocess.py:106} INFO - https://date.nager.at/api/v4/Holidays/GE/2026
+[2026-07-09T18:01:48.316+0000] {subprocess.py:106} INFO - GE 200 application/json; charset=utf-8
+[2026-07-09T18:01:48.318+0000] {subprocess.py:106} INFO - GE: 17
+[2026-07-09T18:01:48.321+0000] {subprocess.py:106} INFO - https://date.nager.at/api/v4/Holidays/IL/2026
+[2026-07-09T18:01:48.324+0000] {subprocess.py:106} INFO - IL 204 None
+[2026-07-09T18:01:48.326+0000] {subprocess.py:106} INFO - 
+[2026-07-09T18:01:48.329+0000] {subprocess.py:106} INFO - IL: 0
+[2026-07-09T18:01:48.331+0000] {subprocess.py:106} INFO - https://date.nager.at/api/v4/Holidays/KG/2026
+[2026-07-09T18:01:48.333+0000] {subprocess.py:106} INFO - KG 204 None
+[2026-07-09T18:01:48.335+0000] {subprocess.py:106} INFO - 
+[2026-07-09T18:01:48.337+0000] {subprocess.py:106} INFO - KG: 0
+[2026-07-09T18:01:48.339+0000] {subprocess.py:106} INFO - https://date.nager.at/api/v4/Holidays/KZ/2026
+[2026-07-09T18:01:48.342+0000] {subprocess.py:106} INFO - KZ 200 application/json; charset=utf-8
+[2026-07-09T18:01:48.345+0000] {subprocess.py:106} INFO - KZ: 13
+[2026-07-09T18:01:48.347+0000] {subprocess.py:106} INFO - https://date.nager.at/api/v4/Holidays/MD/2026
+[2026-07-09T18:01:48.350+0000] {subprocess.py:106} INFO - MD 200 application/json; charset=utf-8
+[2026-07-09T18:01:48.353+0000] {subprocess.py:106} INFO - MD: 16
+[2026-07-09T18:01:48.356+0000] {subprocess.py:106} INFO - https://date.nager.at/api/v4/Holidays/RU/2026
+[2026-07-09T18:01:48.359+0000] {subprocess.py:106} INFO - RU 200 application/json; charset=utf-8
+[2026-07-09T18:01:48.362+0000] {subprocess.py:106} INFO - RU: 13
+[2026-07-09T18:01:48.365+0000] {subprocess.py:106} INFO - https://date.nager.at/api/v4/Holidays/TJ/2026
+[2026-07-09T18:01:48.367+0000] {subprocess.py:106} INFO - TJ 204 None
+[2026-07-09T18:01:48.370+0000] {subprocess.py:106} INFO - 
+[2026-07-09T18:01:48.372+0000] {subprocess.py:106} INFO - TJ: 0
+[2026-07-09T18:01:48.374+0000] {subprocess.py:106} INFO - https://date.nager.at/api/v4/Holidays/UZ/2026
+[2026-07-09T18:01:48.377+0000] {subprocess.py:106} INFO - UZ 204 None
+[2026-07-09T18:01:48.380+0000] {subprocess.py:106} INFO - 
+[2026-07-09T18:01:48.382+0000] {subprocess.py:106} INFO - UZ: 0
+[2026-07-09T18:01:48.384+0000] {subprocess.py:106} INFO - Loaded: 83
+[2026-07-09T18:01:48.449+0000] {subprocess.py:110} INFO - Command exited with return code 0
+[2026-07-09T18:01:48.496+0000] {taskinstance.py:341} INFO - ::group::Post task execution logs
+[2026-07-09T18:01:48.498+0000] {taskinstance.py:353} INFO - Marking task as SUCCESS. dag_id=load_public_holidays, task_id=load_nager_holidays, run_id=scheduled__2026-06-01T02:00:00+00:00, execution_date=20260601T020000, start_date=20260709T180126, end_date=20260709T180148
+[2026-07-09T18:01:48.553+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2026-07-09T18:01:48.571+0000] {taskinstance.py:3901} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-07-09T18:01:48.579+0000] {local_task_job_runner.py:245} INFO - ::endgroup::
